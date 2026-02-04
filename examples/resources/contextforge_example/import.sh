@@ -1,0 +1,1 @@
+terraform import contextforge_example.test "id-123"
