@@ -8,12 +8,14 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/nkbud/terraform-provider-contextforge/internal/client"
@@ -84,6 +86,9 @@ func (r *GatewayResource) Schema(ctx context.Context, req resource.SchemaRequest
 				MarkdownDescription: "Transport protocol for the gateway (e.g. `STREAMABLEHTTP`).",
 				Optional:            true,
 				Computed:            true,
+				Validators: []validator.String{
+					stringvalidator.OneOf("STREAMABLEHTTP", "SSE", "STDIO"),
+				},
 			},
 			"capabilities": schema.StringAttribute{
 				MarkdownDescription: "Gateway capabilities as a JSON-encoded string.",
@@ -136,6 +141,9 @@ func (r *GatewayResource) Schema(ctx context.Context, req resource.SchemaRequest
 				MarkdownDescription: "Authentication value for the gateway.",
 				Optional:            true,
 				Sensitive:           true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"created_at": schema.StringAttribute{
 				MarkdownDescription: "Timestamp when the gateway was created.",
@@ -266,7 +274,7 @@ func (r *GatewayResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	// Preserve auth_value from state since the API may not return it
+	// Preserve auth_value from state since the API does not return it
 	authValue := data.AuthValue
 
 	r.gatewayToModel(ctx, gateway, &data, &resp.Diagnostics)
@@ -274,8 +282,8 @@ func (r *GatewayResource) Read(ctx context.Context, req resource.ReadRequest, re
 		return
 	}
 
-	// Restore auth_value if API returned empty but state had a value
-	if data.AuthValue.IsNull() || data.AuthValue.ValueString() == "" {
+	// Restore auth_value — the API never echoes it back
+	if !authValue.IsNull() && !authValue.IsUnknown() {
 		data.AuthValue = authValue
 	}
 
@@ -350,7 +358,7 @@ func (r *GatewayResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	// Preserve auth_value from plan since the API may not return it
+	// Preserve auth_value from plan since the API does not return it
 	authValue := data.AuthValue
 
 	r.gatewayToModel(ctx, gateway, &data, &resp.Diagnostics)
@@ -358,8 +366,8 @@ func (r *GatewayResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	// Restore auth_value if API returned empty but plan had a value
-	if data.AuthValue.IsNull() || data.AuthValue.ValueString() == "" {
+	// Restore auth_value — the API never echoes it back
+	if !authValue.IsNull() && !authValue.IsUnknown() {
 		data.AuthValue = authValue
 	}
 

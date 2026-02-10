@@ -209,10 +209,10 @@ func (c *Client) DeleteServer(ctx context.Context, id string) error {
 
 // ServerUpdate represents the request body for PUT /servers/{id}.
 type ServerUpdate struct {
-	Name        string   `json:"name,omitempty"`
-	Description string   `json:"description,omitempty"`
-	Tags        []string `json:"tags,omitempty"`
-	ToolIDs     []string `json:"tool_ids,omitempty"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Tags        []string `json:"tags"`
+	ToolIDs     []string `json:"tool_ids"`
 }
 
 // UpdateServer calls PUT /servers/{id}.
