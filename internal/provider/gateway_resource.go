@@ -130,6 +130,7 @@ func (r *GatewayResource) Schema(ctx context.Context, req resource.SchemaRequest
 			"auth_type": schema.StringAttribute{
 				MarkdownDescription: "Authentication type for the gateway.",
 				Optional:            true,
+				Computed:            true,
 			},
 			"auth_value": schema.StringAttribute{
 				MarkdownDescription: "Authentication value for the gateway.",
@@ -394,10 +395,19 @@ func (r *GatewayResource) gatewayToModel(ctx context.Context, gateway *client.Ga
 	data.Description = types.StringValue(gateway.Description)
 	data.Transport = types.StringValue(gateway.Transport)
 	data.IsActive = types.BoolValue(gateway.IsActive)
-	data.AuthType = types.StringValue(gateway.AuthType)
-	data.AuthValue = types.StringValue(gateway.AuthValue)
 	data.CreatedAt = types.StringValue(gateway.CreatedAt)
 	data.UpdatedAt = types.StringValue(gateway.UpdatedAt)
+
+	if gateway.AuthType != "" {
+		data.AuthType = types.StringValue(gateway.AuthType)
+	} else {
+		data.AuthType = types.StringNull()
+	}
+	if gateway.AuthValue != "" {
+		data.AuthValue = types.StringValue(gateway.AuthValue)
+	} else {
+		data.AuthValue = types.StringNull()
+	}
 
 	if gateway.Capabilities != nil {
 		capsJSON, err := json.Marshal(gateway.Capabilities)
