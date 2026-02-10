@@ -38,8 +38,9 @@ type ServerItemModel struct {
 	Name        types.String `tfsdk:"name"`
 	Description types.String `tfsdk:"description"`
 	Tags        types.List   `tfsdk:"tags"`
+	ToolIDs     types.List   `tfsdk:"tool_ids"`
 	Visibility  types.String `tfsdk:"visibility"`
-	Status      types.String `tfsdk:"status"`
+	IsActive    types.Bool   `tfsdk:"is_active"`
 	CreatedAt   types.String `tfsdk:"created_at"`
 	UpdatedAt   types.String `tfsdk:"updated_at"`
 }
@@ -78,12 +79,17 @@ func (d *ServersDataSource) Schema(ctx context.Context, req datasource.SchemaReq
 							Computed:            true,
 							ElementType:         types.StringType,
 						},
+						"tool_ids": schema.ListAttribute{
+							MarkdownDescription: "List of tool IDs associated with the server.",
+							Computed:            true,
+							ElementType:         types.StringType,
+						},
 						"visibility": schema.StringAttribute{
 							MarkdownDescription: "Visibility of the server.",
 							Computed:            true,
 						},
-						"status": schema.StringAttribute{
-							MarkdownDescription: "Server status.",
+						"is_active": schema.BoolAttribute{
+							MarkdownDescription: "Whether the server is active.",
 							Computed:            true,
 						},
 						"created_at": schema.StringAttribute{
@@ -149,13 +155,20 @@ func (d *ServersDataSource) Read(ctx context.Context, req datasource.ReadRequest
 			return
 		}
 
+		toolIDs, diags := types.ListValueFrom(ctx, types.StringType, s.ToolIDs)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+
 		data.Servers[i] = ServerItemModel{
 			ID:          types.StringValue(s.ID),
 			Name:        types.StringValue(s.Name),
 			Description: types.StringValue(s.Description),
 			Tags:        tags,
+			ToolIDs:     toolIDs,
 			Visibility:  types.StringValue(s.Visibility),
-			Status:      types.StringValue(s.Status),
+			IsActive:    types.BoolValue(s.IsActive),
 			CreatedAt:   types.StringValue(s.CreatedAt),
 			UpdatedAt:   types.StringValue(s.UpdatedAt),
 		}

@@ -133,7 +133,7 @@ type Server struct {
 	Tags        []string `json:"tags,omitempty"`
 	ToolIDs     []string `json:"tool_ids,omitempty"`
 	Visibility  string   `json:"visibility,omitempty"`
-	Status      string   `json:"status,omitempty"`
+	IsActive    bool     `json:"is_active"`
 	CreatedAt   string   `json:"created_at,omitempty"`
 	UpdatedAt   string   `json:"updated_at,omitempty"`
 }

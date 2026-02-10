@@ -32,7 +32,7 @@ func TestAccServerResource(t *testing.T) {
 				Description: req.Server.Description,
 				Tags:        req.Server.Tags,
 				Visibility:  req.Visibility,
-				Status:      "active",
+				IsActive:    true,
 			})
 		case r.URL.Path == "/servers/srv-created" && r.Method == http.MethodGet:
 			w.Header().Set("Content-Type", "application/json")
@@ -42,7 +42,7 @@ func TestAccServerResource(t *testing.T) {
 				Description: "A managed server",
 				Tags:        []string{"managed"},
 				Visibility:  "private",
-				Status:      "active",
+				IsActive:    true,
 			})
 		case r.URL.Path == "/servers/srv-created" && r.Method == http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)

@@ -31,8 +31,9 @@ type ServerDataSourceModel struct {
 	Name        types.String `tfsdk:"name"`
 	Description types.String `tfsdk:"description"`
 	Tags        types.List   `tfsdk:"tags"`
+	ToolIDs     types.List   `tfsdk:"tool_ids"`
 	Visibility  types.String `tfsdk:"visibility"`
-	Status      types.String `tfsdk:"status"`
+	IsActive    types.Bool   `tfsdk:"is_active"`
 	CreatedAt   types.String `tfsdk:"created_at"`
 	UpdatedAt   types.String `tfsdk:"updated_at"`
 }
@@ -62,12 +63,17 @@ func (d *ServerDataSource) Schema(ctx context.Context, req datasource.SchemaRequ
 				Computed:            true,
 				ElementType:         types.StringType,
 			},
+			"tool_ids": schema.ListAttribute{
+				MarkdownDescription: "List of tool IDs associated with the server.",
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
 			"visibility": schema.StringAttribute{
 				MarkdownDescription: "Visibility of the server (e.g. `public`, `private`).",
 				Computed:            true,
 			},
-			"status": schema.StringAttribute{
-				MarkdownDescription: "Server status.",
+			"is_active": schema.BoolAttribute{
+				MarkdownDescription: "Whether the server is active.",
 				Computed:            true,
 			},
 			"created_at": schema.StringAttribute{
@@ -121,7 +127,7 @@ func (d *ServerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	data.Name = types.StringValue(server.Name)
 	data.Description = types.StringValue(server.Description)
 	data.Visibility = types.StringValue(server.Visibility)
-	data.Status = types.StringValue(server.Status)
+	data.IsActive = types.BoolValue(server.IsActive)
 	data.CreatedAt = types.StringValue(server.CreatedAt)
 	data.UpdatedAt = types.StringValue(server.UpdatedAt)
 
@@ -131,6 +137,13 @@ func (d *ServerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 		return
 	}
 	data.Tags = tags
+
+	toolIDs, diags := types.ListValueFrom(ctx, types.StringType, server.ToolIDs)
+	resp.Diagnostics.Append(diags...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	data.ToolIDs = toolIDs
 
 	tflog.Trace(ctx, "read server data source")
 

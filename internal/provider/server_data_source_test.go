@@ -28,7 +28,7 @@ func TestAccServerDataSource(t *testing.T) {
 				Description: "A test server",
 				Tags:        []string{"demo"},
 				Visibility:  "private",
-				Status:      "active",
+				IsActive:    true,
 			})
 			return
 		}
