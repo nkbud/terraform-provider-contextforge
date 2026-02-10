@@ -6,10 +6,9 @@ This PR resolves the provider publishing error by preparing the repository for i
 
 ## What Has Been Done
 
-1. ✅ **Created release tag `v0.1.0`** - A git tag has been created locally pointing to the latest commit
-2. ✅ **Added RELEASE_INSTRUCTIONS.md** - Comprehensive documentation on creating and managing releases
-3. ✅ **Added push-release-tag.sh** - Helper script to push the tag and trigger the release workflow
-4. ✅ **Updated README.md** - Added note about release requirements with link to instructions
+1. ✅ **Added RELEASE_INSTRUCTIONS.md** - Comprehensive documentation on creating and managing releases
+2. ✅ **Added push-release-tag.sh** - Helper script to push tags and trigger the release workflow
+3. ✅ **Updated README.md** - Added note about release requirements with link to instructions
 
 ## What Needs to Be Done Next
 

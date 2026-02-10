@@ -19,6 +19,17 @@ if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     exit 1
 fi
 
+# Check if tag exists locally
+if ! git rev-parse "$VERSION" >/dev/null 2>&1; then
+    echo "❌ Error: Tag $VERSION does not exist locally."
+    echo ""
+    echo "Please create the tag first:"
+    echo "  git tag -a $VERSION -m \"Release $VERSION\""
+    echo ""
+    echo "Then run this script again to push it."
+    exit 1
+fi
+
 echo "Pushing release tag $VERSION to GitHub..."
 git push origin "$VERSION"
 
