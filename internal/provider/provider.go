@@ -91,7 +91,12 @@ func (p *ContextForgeProvider) Configure(ctx context.Context, req provider.Confi
 func (p *ContextForgeProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{
 		NewExampleResource,
+		NewGatewayResource,
 		NewServerResource,
+		NewToolResource,
+		NewMCPResourceResource,
+		NewPromptResource,
+		NewRootResource,
 	}
 }
 
