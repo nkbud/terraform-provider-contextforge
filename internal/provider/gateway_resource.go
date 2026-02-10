@@ -432,17 +432,25 @@ func (r *GatewayResource) gatewayToModel(ctx context.Context, gateway *client.Ga
 		data.HealthCheckRetries = types.Int64Null()
 	}
 
-	tagsList, diags := types.ListValueFrom(ctx, types.StringType, gateway.Tags)
-	diagnostics.Append(diags...)
-	if diagnostics.HasError() {
-		return
+	if gateway.Tags != nil {
+		tagsList, diags := types.ListValueFrom(ctx, types.StringType, gateway.Tags)
+		diagnostics.Append(diags...)
+		if diagnostics.HasError() {
+			return
+		}
+		data.Tags = tagsList
+	} else {
+		data.Tags = types.ListNull(types.StringType)
 	}
-	data.Tags = tagsList
 
-	headersList, diags := types.ListValueFrom(ctx, types.StringType, gateway.PassthroughHeaders)
-	diagnostics.Append(diags...)
-	if diagnostics.HasError() {
-		return
+	if gateway.PassthroughHeaders != nil {
+		headersList, diags := types.ListValueFrom(ctx, types.StringType, gateway.PassthroughHeaders)
+		diagnostics.Append(diags...)
+		if diagnostics.HasError() {
+			return
+		}
+		data.PassthroughHeaders = headersList
+	} else {
+		data.PassthroughHeaders = types.ListNull(types.StringType)
 	}
-	data.PassthroughHeaders = headersList
 }

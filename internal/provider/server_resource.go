@@ -261,17 +261,25 @@ func (r *ServerResource) serverToModel(ctx context.Context, server *client.Serve
 	data.CreatedAt = types.StringValue(server.CreatedAt)
 	data.UpdatedAt = types.StringValue(server.UpdatedAt)
 
-	tagsList, diags := types.ListValueFrom(ctx, types.StringType, server.Tags)
-	diagnostics.Append(diags...)
-	if diagnostics.HasError() {
-		return
+	if server.Tags != nil {
+		tagsList, diags := types.ListValueFrom(ctx, types.StringType, server.Tags)
+		diagnostics.Append(diags...)
+		if diagnostics.HasError() {
+			return
+		}
+		data.Tags = tagsList
+	} else {
+		data.Tags = types.ListNull(types.StringType)
 	}
-	data.Tags = tagsList
 
-	toolIDsList, diags := types.ListValueFrom(ctx, types.StringType, server.ToolIDs)
-	diagnostics.Append(diags...)
-	if diagnostics.HasError() {
-		return
+	if server.ToolIDs != nil {
+		toolIDsList, diags := types.ListValueFrom(ctx, types.StringType, server.ToolIDs)
+		diagnostics.Append(diags...)
+		if diagnostics.HasError() {
+			return
+		}
+		data.ToolIDs = toolIDsList
+	} else {
+		data.ToolIDs = types.ListNull(types.StringType)
 	}
-	data.ToolIDs = toolIDsList
 }

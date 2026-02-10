@@ -286,10 +286,14 @@ func (r *ToolResource) toolToModel(ctx context.Context, tool *client.Tool, data 
 		data.InputSchema = types.StringNull()
 	}
 
-	tagsList, diags := types.ListValueFrom(ctx, types.StringType, tool.Tags)
-	diagnostics.Append(diags...)
-	if diagnostics.HasError() {
-		return
+	if tool.Tags != nil {
+		tagsList, diags := types.ListValueFrom(ctx, types.StringType, tool.Tags)
+		diagnostics.Append(diags...)
+		if diagnostics.HasError() {
+			return
+		}
+		data.Tags = tagsList
+	} else {
+		data.Tags = types.ListNull(types.StringType)
 	}
-	data.Tags = tagsList
 }

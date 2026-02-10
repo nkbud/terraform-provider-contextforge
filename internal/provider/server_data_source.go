@@ -131,19 +131,27 @@ func (d *ServerDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 	data.CreatedAt = types.StringValue(server.CreatedAt)
 	data.UpdatedAt = types.StringValue(server.UpdatedAt)
 
-	tags, diags := types.ListValueFrom(ctx, types.StringType, server.Tags)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
+	if server.Tags != nil {
+		tags, diags := types.ListValueFrom(ctx, types.StringType, server.Tags)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		data.Tags = tags
+	} else {
+		data.Tags = types.ListNull(types.StringType)
 	}
-	data.Tags = tags
 
-	toolIDs, diags := types.ListValueFrom(ctx, types.StringType, server.ToolIDs)
-	resp.Diagnostics.Append(diags...)
-	if resp.Diagnostics.HasError() {
-		return
+	if server.ToolIDs != nil {
+		toolIDs, diags := types.ListValueFrom(ctx, types.StringType, server.ToolIDs)
+		resp.Diagnostics.Append(diags...)
+		if resp.Diagnostics.HasError() {
+			return
+		}
+		data.ToolIDs = toolIDs
+	} else {
+		data.ToolIDs = types.ListNull(types.StringType)
 	}
-	data.ToolIDs = toolIDs
 
 	tflog.Trace(ctx, "read server data source")
 

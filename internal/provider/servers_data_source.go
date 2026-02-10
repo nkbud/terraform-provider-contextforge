@@ -149,16 +149,28 @@ func (d *ServersDataSource) Read(ctx context.Context, req datasource.ReadRequest
 
 	data.Servers = make([]ServerItemModel, len(servers))
 	for i, s := range servers {
-		tags, diags := types.ListValueFrom(ctx, types.StringType, s.Tags)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
+		var tags types.List
+		if s.Tags != nil {
+			t, diags := types.ListValueFrom(ctx, types.StringType, s.Tags)
+			resp.Diagnostics.Append(diags...)
+			if resp.Diagnostics.HasError() {
+				return
+			}
+			tags = t
+		} else {
+			tags = types.ListNull(types.StringType)
 		}
 
-		toolIDs, diags := types.ListValueFrom(ctx, types.StringType, s.ToolIDs)
-		resp.Diagnostics.Append(diags...)
-		if resp.Diagnostics.HasError() {
-			return
+		var toolIDs types.List
+		if s.ToolIDs != nil {
+			t, diags := types.ListValueFrom(ctx, types.StringType, s.ToolIDs)
+			resp.Diagnostics.Append(diags...)
+			if resp.Diagnostics.HasError() {
+				return
+			}
+			toolIDs = t
+		} else {
+			toolIDs = types.ListNull(types.StringType)
 		}
 
 		data.Servers[i] = ServerItemModel{

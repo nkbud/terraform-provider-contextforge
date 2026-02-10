@@ -280,10 +280,14 @@ func (r *PromptResource) promptToModel(ctx context.Context, prompt *client.Promp
 		data.Arguments = types.StringNull()
 	}
 
-	tagsList, diags := types.ListValueFrom(ctx, types.StringType, prompt.Tags)
-	diagnostics.Append(diags...)
-	if diagnostics.HasError() {
-		return
+	if prompt.Tags != nil {
+		tagsList, diags := types.ListValueFrom(ctx, types.StringType, prompt.Tags)
+		diagnostics.Append(diags...)
+		if diagnostics.HasError() {
+			return
+		}
+		data.Tags = tagsList
+	} else {
+		data.Tags = types.ListNull(types.StringType)
 	}
-	data.Tags = tagsList
 }
