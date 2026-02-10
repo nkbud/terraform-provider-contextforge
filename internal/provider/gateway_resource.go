@@ -189,12 +189,17 @@ func (r *GatewayResource) Create(ctx context.Context, req resource.CreateRequest
 		}
 	}
 
+	isActiveCreate := true
+	if !data.IsActive.IsNull() && !data.IsActive.IsUnknown() {
+		isActiveCreate = data.IsActive.ValueBool()
+	}
+
 	createReq := client.GatewayCreate{
 		Name:               data.Name.ValueString(),
 		URL:                data.URL.ValueString(),
 		Description:        data.Description.ValueString(),
 		Transport:          data.Transport.ValueString(),
-		IsActive:           data.IsActive.ValueBool(),
+		IsActive:           isActiveCreate,
 		Tags:               tags,
 		PassthroughHeaders: passthroughHeaders,
 		AuthType:           data.AuthType.ValueString(),
@@ -211,12 +216,19 @@ func (r *GatewayResource) Create(ctx context.Context, req resource.CreateRequest
 	}
 
 	if !data.HealthCheckURL.IsNull() && !data.HealthCheckURL.IsUnknown() {
-		createReq.HealthCheck = &client.GatewayHealthCheck{
-			URL:      data.HealthCheckURL.ValueString(),
-			Interval: int(data.HealthCheckInterval.ValueInt64()),
-			Timeout:  int(data.HealthCheckTimeout.ValueInt64()),
-			Retries:  int(data.HealthCheckRetries.ValueInt64()),
+		hc := &client.GatewayHealthCheck{
+			URL: data.HealthCheckURL.ValueString(),
 		}
+		if !data.HealthCheckInterval.IsNull() && !data.HealthCheckInterval.IsUnknown() {
+			hc.Interval = int(data.HealthCheckInterval.ValueInt64())
+		}
+		if !data.HealthCheckTimeout.IsNull() && !data.HealthCheckTimeout.IsUnknown() {
+			hc.Timeout = int(data.HealthCheckTimeout.ValueInt64())
+		}
+		if !data.HealthCheckRetries.IsNull() && !data.HealthCheckRetries.IsUnknown() {
+			hc.Retries = int(data.HealthCheckRetries.ValueInt64())
+		}
+		createReq.HealthCheck = hc
 	}
 
 	gateway, err := r.client.CreateGateway(ctx, createReq)
@@ -316,12 +328,19 @@ func (r *GatewayResource) Update(ctx context.Context, req resource.UpdateRequest
 	}
 
 	if !data.HealthCheckURL.IsNull() && !data.HealthCheckURL.IsUnknown() {
-		updateReq.HealthCheck = &client.GatewayHealthCheck{
-			URL:      data.HealthCheckURL.ValueString(),
-			Interval: int(data.HealthCheckInterval.ValueInt64()),
-			Timeout:  int(data.HealthCheckTimeout.ValueInt64()),
-			Retries:  int(data.HealthCheckRetries.ValueInt64()),
+		hc := &client.GatewayHealthCheck{
+			URL: data.HealthCheckURL.ValueString(),
 		}
+		if !data.HealthCheckInterval.IsNull() && !data.HealthCheckInterval.IsUnknown() {
+			hc.Interval = int(data.HealthCheckInterval.ValueInt64())
+		}
+		if !data.HealthCheckTimeout.IsNull() && !data.HealthCheckTimeout.IsUnknown() {
+			hc.Timeout = int(data.HealthCheckTimeout.ValueInt64())
+		}
+		if !data.HealthCheckRetries.IsNull() && !data.HealthCheckRetries.IsUnknown() {
+			hc.Retries = int(data.HealthCheckRetries.ValueInt64())
+		}
+		updateReq.HealthCheck = hc
 	}
 
 	gateway, err := r.client.UpdateGateway(ctx, data.ID.ValueString(), updateReq)
