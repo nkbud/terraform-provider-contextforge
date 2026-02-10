@@ -27,9 +27,9 @@ type ServersDataSource struct {
 
 // ServersDataSourceModel describes the data source data model.
 type ServersDataSourceModel struct {
-	IncludeInactive types.Bool            `tfsdk:"include_inactive"`
-	Servers         []ServerItemModel     `tfsdk:"servers"`
-	ID              types.String          `tfsdk:"id"`
+	IncludeInactive types.Bool        `tfsdk:"include_inactive"`
+	Servers         []ServerItemModel `tfsdk:"servers"`
+	ID              types.String      `tfsdk:"id"`
 }
 
 // ServerItemModel describes a single server in the list.

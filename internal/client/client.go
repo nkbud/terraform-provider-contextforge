@@ -16,9 +16,9 @@ import (
 
 // Client is the HTTP client for the ContextForge MCP Gateway API.
 type Client struct {
-	BaseURL    string
+	BaseURL     string
 	BearerToken string
-	HTTPClient *http.Client
+	HTTPClient  *http.Client
 }
 
 // NewClient creates a new ContextForge API client.
