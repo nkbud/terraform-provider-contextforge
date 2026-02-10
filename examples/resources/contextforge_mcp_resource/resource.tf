@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 resource "contextforge_mcp_resource" "example" {
   uri         = "file:///data/config.json"
   name        = "config"

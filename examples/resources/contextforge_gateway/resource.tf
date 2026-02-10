@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 resource "contextforge_gateway" "example" {
   name        = "atlassian"
   url         = "https://mcp.atlassian.com/v1/mcp"

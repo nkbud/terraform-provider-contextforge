@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 resource "contextforge_tool" "example" {
   name        = "my-tool"
   description = "A custom tool"

@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 data "contextforge_server" "example" {
   id = "srv-id"
 }

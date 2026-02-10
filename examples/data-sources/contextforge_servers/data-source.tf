@@ -1,3 +1,5 @@
+# Copyright (c) HashiCorp, Inc.
+
 data "contextforge_servers" "example" {
   include_inactive = false
 }
