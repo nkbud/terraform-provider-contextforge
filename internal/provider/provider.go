@@ -112,6 +112,15 @@ func (p *ContextForgeProvider) DataSources(ctx context.Context) []func() datasou
 		NewHealthDataSource,
 		NewServerDataSource,
 		NewServersDataSource,
+		NewGatewayDataSource,
+		NewGatewaysDataSource,
+		NewToolDataSource,
+		NewToolsDataSource,
+		NewMCPResourceDataSource,
+		NewMCPResourcesDataSource,
+		NewPromptDataSource,
+		NewPromptsDataSource,
+		NewRootsDataSource,
 	}
 }
 
