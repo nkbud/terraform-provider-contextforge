@@ -2,6 +2,8 @@
 
 This Terraform provider enables infrastructure-as-code management for the [IBM MCP ContextForge](https://ibm.github.io/mcp-context-forge/) system.
 
+> **Note**: To publish this provider to the Terraform Registry, you need to create and push at least one release tag. See [RELEASE_INSTRUCTIONS.md](RELEASE_INSTRUCTIONS.md) for details.
+
 ## About IBM MCP ContextForge
 
 IBM MCP Context Forge is an open-source gateway and registry that centralizes the management of tools, resources, and prompts accessible to MCP-compatible LLM applications. It acts as a secure proxy and registry, federates both REST and MCP servers, and provides key enterprise features such as observability, authentication, rate limiting, and more.
