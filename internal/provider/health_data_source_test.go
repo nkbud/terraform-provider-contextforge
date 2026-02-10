@@ -22,7 +22,10 @@ func TestAccHealthDataSource(t *testing.T) {
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/health" {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(client.HealthResponse{Status: "ok"})
+			if err := json.NewEncoder(w).Encode(client.HealthResponse{Status: "ok"}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 			return
 		}
 		w.WriteHeader(http.StatusNotFound)

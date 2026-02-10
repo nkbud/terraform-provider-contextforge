@@ -22,14 +22,17 @@ func TestAccServerDataSource(t *testing.T) {
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/servers/srv-123" && r.Method == http.MethodGet {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(client.Server{
+			if err := json.NewEncoder(w).Encode(client.Server{
 				ID:          "srv-123",
 				Name:        "test-server",
 				Description: "A test server",
 				Tags:        []string{"demo"},
 				Visibility:  "private",
 				IsActive:    true,
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 			return
 		}
 		w.WriteHeader(http.StatusNotFound)

@@ -23,10 +23,13 @@ func TestAccPromptResource(t *testing.T) {
 		switch {
 		case r.URL.Path == "/prompts" && r.Method == http.MethodPost:
 			var req client.CreatePromptRequest
-			json.NewDecoder(r.Body).Decode(&req)
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(client.Prompt{
+			if err := json.NewEncoder(w).Encode(client.Prompt{
 				ID:          "prompt-created",
 				Name:        req.Prompt.Name,
 				Description: req.Prompt.Description,
@@ -35,10 +38,13 @@ func TestAccPromptResource(t *testing.T) {
 				Visibility:  req.Visibility,
 				CreatedAt:   "2025-01-01T00:00:00Z",
 				UpdatedAt:   "2025-01-01T00:00:00Z",
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/prompts/prompt-created" && r.Method == http.MethodGet:
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(client.Prompt{
+			if err := json.NewEncoder(w).Encode(client.Prompt{
 				ID:          "prompt-created",
 				Name:        "test-prompt",
 				Description: "A test prompt",
@@ -47,7 +53,10 @@ func TestAccPromptResource(t *testing.T) {
 				Visibility:  "public",
 				CreatedAt:   "2025-01-01T00:00:00Z",
 				UpdatedAt:   "2025-01-01T00:00:00Z",
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/prompts/prompt-created" && r.Method == http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		default:

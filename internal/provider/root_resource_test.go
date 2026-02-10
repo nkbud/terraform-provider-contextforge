@@ -23,21 +23,30 @@ func TestAccRootResource(t *testing.T) {
 		switch {
 		case r.URL.Path == "/roots" && r.Method == http.MethodPost:
 			var req client.Root
-			json.NewDecoder(r.Body).Decode(&req)
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(client.Root{
+			if err := json.NewEncoder(w).Encode(client.Root{
 				URI:  req.URI,
 				Name: req.Name,
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/roots" && r.Method == http.MethodGet:
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode([]client.Root{
+			if err := json.NewEncoder(w).Encode([]client.Root{
 				{
 					URI:  "file:///workspace",
 					Name: "test-root",
 				},
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/roots/file%3A%2F%2F%2Fworkspace" && r.Method == http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		default:

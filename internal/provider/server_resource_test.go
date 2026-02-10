@@ -23,27 +23,36 @@ func TestAccServerResource(t *testing.T) {
 		switch {
 		case r.URL.Path == "/servers" && r.Method == http.MethodPost:
 			var req client.CreateServerRequest
-			json.NewDecoder(r.Body).Decode(&req)
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(client.Server{
+			if err := json.NewEncoder(w).Encode(client.Server{
 				ID:          "srv-created",
 				Name:        req.Server.Name,
 				Description: req.Server.Description,
 				Tags:        req.Server.Tags,
 				Visibility:  req.Visibility,
 				IsActive:    true,
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/servers/srv-created" && r.Method == http.MethodGet:
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(client.Server{
+			if err := json.NewEncoder(w).Encode(client.Server{
 				ID:          "srv-created",
 				Name:        "my-server",
 				Description: "A managed server",
 				Tags:        []string{"managed"},
 				Visibility:  "private",
 				IsActive:    true,
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/servers/srv-created" && r.Method == http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		default:

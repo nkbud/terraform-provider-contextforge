@@ -23,10 +23,13 @@ func TestAccGatewayResource(t *testing.T) {
 		switch {
 		case r.URL.Path == "/gateways" && r.Method == http.MethodPost:
 			var req client.GatewayCreate
-			json.NewDecoder(r.Body).Decode(&req)
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(client.Gateway{
+			if err := json.NewEncoder(w).Encode(client.Gateway{
 				ID:                 "gw-created",
 				Name:               req.Name,
 				URL:                req.URL,
@@ -37,10 +40,13 @@ func TestAccGatewayResource(t *testing.T) {
 				PassthroughHeaders: []string{},
 				CreatedAt:          "2025-01-01T00:00:00Z",
 				UpdatedAt:          "2025-01-01T00:00:00Z",
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/gateways/gw-created" && r.Method == http.MethodGet:
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(client.Gateway{
+			if err := json.NewEncoder(w).Encode(client.Gateway{
 				ID:                 "gw-created",
 				Name:               "test-gw",
 				URL:                "https://example.com/mcp",
@@ -50,7 +56,10 @@ func TestAccGatewayResource(t *testing.T) {
 				PassthroughHeaders: []string{},
 				CreatedAt:          "2025-01-01T00:00:00Z",
 				UpdatedAt:          "2025-01-01T00:00:00Z",
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/gateways/gw-created" && r.Method == http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		default:

@@ -20,7 +20,10 @@ func TestGetHealth(t *testing.T) {
 			t.Errorf("expected GET, got %s", r.Method)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(HealthResponse{Status: "ok"})
+		if err := json.NewEncoder(w).Encode(HealthResponse{Status: "ok"}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -43,9 +46,12 @@ func TestListServers(t *testing.T) {
 			t.Errorf("expected auth header, got %s", r.Header.Get("Authorization"))
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode([]Server{
+		if err := json.NewEncoder(w).Encode([]Server{
 			{ID: "srv-1", Name: "test-server"},
-		})
+		}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -84,11 +90,14 @@ func TestCreateServer(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(Server{
+		if err := json.NewEncoder(w).Encode(Server{
 			ID:         "srv-new",
 			Name:       req.Server.Name,
 			Visibility: req.Visibility,
-		})
+		}); err != nil {
+			t.Errorf("failed to encode response: %v", err)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -111,7 +120,10 @@ func TestGetServer(t *testing.T) {
 			t.Errorf("expected path /servers/srv-1, got %s", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Server{ID: "srv-1", Name: "test-server"})
+		if err := json.NewEncoder(w).Encode(Server{ID: "srv-1", Name: "test-server"}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -184,11 +196,14 @@ func TestUpdateServer(t *testing.T) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Server{
+		if err := json.NewEncoder(w).Encode(Server{
 			ID:          "srv-1",
 			Name:        req.Name,
 			Description: req.Description,
-		})
+		}); err != nil {
+			t.Errorf("failed to encode response: %v", err)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -229,7 +244,7 @@ func TestCreateGateway(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(Gateway{
+		if err := json.NewEncoder(w).Encode(Gateway{
 			ID:          "gw-1",
 			Name:        req.Name,
 			URL:         req.URL,
@@ -237,7 +252,10 @@ func TestCreateGateway(t *testing.T) {
 			Transport:   req.Transport,
 			IsActive:    req.IsActive,
 			Tags:        req.Tags,
-		})
+		}); err != nil {
+			t.Errorf("failed to encode response: %v", err)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -267,7 +285,10 @@ func TestGetGateway(t *testing.T) {
 			t.Errorf("expected path /gateways/gw-1, got %s", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Gateway{ID: "gw-1", Name: "test-gw"})
+		if err := json.NewEncoder(w).Encode(Gateway{ID: "gw-1", Name: "test-gw"}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -321,11 +342,14 @@ func TestUpdateGateway(t *testing.T) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Gateway{
+		if err := json.NewEncoder(w).Encode(Gateway{
 			ID:   "gw-1",
 			Name: req.Name,
 			URL:  req.URL,
-		})
+		}); err != nil {
+			t.Errorf("failed to encode response: %v", err)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -385,12 +409,15 @@ func TestCreateTool(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(Tool{
+		if err := json.NewEncoder(w).Encode(Tool{
 			ID:          "tool-1",
 			Name:        req.Tool.Name,
 			Description: req.Tool.Description,
 			Visibility:  req.Visibility,
-		})
+		}); err != nil {
+			t.Errorf("failed to encode response: %v", err)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -416,7 +443,10 @@ func TestGetTool(t *testing.T) {
 			t.Errorf("expected path /tools/tool-1, got %s", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Tool{ID: "tool-1", Name: "test-tool"})
+		if err := json.NewEncoder(w).Encode(Tool{ID: "tool-1", Name: "test-tool"}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -492,12 +522,15 @@ func TestCreateResource(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(Resource{
+		if err := json.NewEncoder(w).Encode(Resource{
 			ID:         "res-1",
 			URI:        req.Resource.URI,
 			Name:       req.Resource.Name,
 			Visibility: req.Visibility,
-		})
+		}); err != nil {
+			t.Errorf("failed to encode response: %v", err)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -523,7 +556,10 @@ func TestGetResource(t *testing.T) {
 			t.Errorf("expected path /resources/res-1/info, got %s", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Resource{ID: "res-1", Name: "test-res", URI: "file:///test"})
+		if err := json.NewEncoder(w).Encode(Resource{ID: "res-1", Name: "test-res", URI: "file:///test"}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -599,12 +635,15 @@ func TestCreatePrompt(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(Prompt{
+		if err := json.NewEncoder(w).Encode(Prompt{
 			ID:          "prompt-1",
 			Name:        req.Prompt.Name,
 			Description: req.Prompt.Description,
 			Visibility:  req.Visibility,
-		})
+		}); err != nil {
+			t.Errorf("failed to encode response: %v", err)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -630,7 +669,10 @@ func TestGetPrompt(t *testing.T) {
 			t.Errorf("expected path /prompts/prompt-1, got %s", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(Prompt{ID: "prompt-1", Name: "test-prompt"})
+		if err := json.NewEncoder(w).Encode(Prompt{ID: "prompt-1", Name: "test-prompt"}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -706,10 +748,13 @@ func TestCreateRoot(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(Root{
+		if err := json.NewEncoder(w).Encode(Root{
 			URI:  req.URI,
 			Name: req.Name,
-		})
+		}); err != nil {
+			t.Errorf("failed to encode response: %v", err)
+			return
+		}
 	}))
 	defer server.Close()
 
@@ -738,9 +783,12 @@ func TestListRoots(t *testing.T) {
 			t.Errorf("expected auth header, got %s", r.Header.Get("Authorization"))
 		}
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode([]Root{
+		if err := json.NewEncoder(w).Encode([]Root{
 			{URI: "file:///workspace", Name: "test-root"},
-		})
+		}); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}))
 	defer server.Close()
 

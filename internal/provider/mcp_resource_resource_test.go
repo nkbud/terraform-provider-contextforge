@@ -23,10 +23,13 @@ func TestAccMCPResourceResource(t *testing.T) {
 		switch {
 		case r.URL.Path == "/resources" && r.Method == http.MethodPost:
 			var req client.CreateResourceRequest
-			json.NewDecoder(r.Body).Decode(&req)
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(client.Resource{
+			if err := json.NewEncoder(w).Encode(client.Resource{
 				ID:          "res-created",
 				URI:         req.Resource.URI,
 				Name:        req.Resource.Name,
@@ -37,10 +40,13 @@ func TestAccMCPResourceResource(t *testing.T) {
 				Visibility:  req.Visibility,
 				CreatedAt:   "2025-01-01T00:00:00Z",
 				UpdatedAt:   "2025-01-01T00:00:00Z",
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/resources/res-created/info" && r.Method == http.MethodGet:
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(client.Resource{
+			if err := json.NewEncoder(w).Encode(client.Resource{
 				ID:         "res-created",
 				URI:        "file:///test/data.json",
 				Name:       "test-res",
@@ -50,7 +56,10 @@ func TestAccMCPResourceResource(t *testing.T) {
 				Visibility: "private",
 				CreatedAt:  "2025-01-01T00:00:00Z",
 				UpdatedAt:  "2025-01-01T00:00:00Z",
-			})
+			}); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 		case r.URL.Path == "/resources/res-created" && r.Method == http.MethodDelete:
 			w.WriteHeader(http.StatusNoContent)
 		default:
