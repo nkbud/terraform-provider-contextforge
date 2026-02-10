@@ -44,15 +44,15 @@ For future releases, follow the same process with an incremented version number:
 ```bash
 # For patch releases (bug fixes)
 git tag -a v0.1.1 -m "Release v0.1.1"
-git push origin v0.1.1
+./push-release-tag.sh v0.1.1
 
 # For minor releases (new features, backwards compatible)
 git tag -a v0.2.0 -m "Release v0.2.0"
-git push origin v0.2.0
+./push-release-tag.sh v0.2.0
 
 # For major releases (breaking changes)
 git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
+./push-release-tag.sh v1.0.0
 ```
 
 ## Prerequisites for Releases

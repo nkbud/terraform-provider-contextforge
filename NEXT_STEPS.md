@@ -30,7 +30,14 @@ git tag -a v0.1.0 -m "Initial release v0.1.0"
 #### Option A: Use the Helper Script (Recommended)
 
 ```bash
+# For v0.1.0 (default if no version specified)
 ./push-release-tag.sh
+
+# Or explicitly specify the version
+./push-release-tag.sh v0.1.0
+
+# For future releases, pass the version as an argument
+./push-release-tag.sh v0.2.0
 ```
 
 This script will push the tag to GitHub and provide links to monitor the release process.
